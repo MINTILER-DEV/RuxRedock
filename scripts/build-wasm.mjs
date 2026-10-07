@@ -1,0 +1,10 @@
+import {spawnSync} from 'node:child_process';
+import {homedir} from 'node:os';
+import {existsSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const local=`${homedir()}/.cargo/bin/wasm-pack`;
+const binary=process.env.WASM_PACK || (existsSync(local)?local:'wasm-pack');
+const result=spawnSync(binary,['build','wasm','--target','web','--out-dir','../frontend/public/wasm','--release','--no-opt'],{cwd:root,stdio:'inherit'});
+if(result.error) console.error('Install wasm-pack and the wasm32-unknown-unknown Rust target.',result.error.message);
+process.exit(result.status??1);

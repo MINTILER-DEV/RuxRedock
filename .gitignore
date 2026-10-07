@@ -1,0 +1,9 @@
+/target/
+/.data/
+/.env
+__pycache__/
+frontend/node_modules/
+frontend/dist/
+frontend/public/wasm/
+playwright-report/
+test-results/
