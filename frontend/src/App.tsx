@@ -86,8 +86,8 @@ export default function App(){
   async function getDownload(file:Entry,version?:Version){
     if(!drive)return;const id=crypto.randomUUID();const controller=new AbortController();
     setTransfers(list=>[{id,name:file.name,kind:'download',stage:'Preparing',percent:0,status:'running',controller},...list]);
-    try{const latest=version||(await drive.versions(file.id)).find(v=>v.status==='ready');if(!latest)throw new Error('This file is still uploading');await download(drive,file.id,latest.id,file.name,key,controller.signal,(stage,percent)=>updateTransfer(id,{stage,percent}));updateTransfer(id,{status:'done'});notify(`${file.name} downloaded`);}
-    catch(error){const cancelled=controller.signal.aborted;const message=error instanceof Error?error.message:'Download failed';updateTransfer(id,{status:cancelled?'cancelled':'error',stage:cancelled?'Cancelled':'Download failed',error:cancelled?undefined:message});if(!cancelled)notify(message,true);}
+    try{const picker=(window as Window&{showSaveFilePicker?:(options:unknown)=>Promise<FileSystemFileHandle>}).showSaveFilePicker;const handle=picker&&!drive.demo?await picker.call(window,{suggestedName:file.name}):undefined;const latest=version||(await drive.versions(file.id)).find(v=>v.status==='ready');if(!latest)throw new Error('This file is still uploading');await download(drive,file.id,latest.id,file.name,key,controller.signal,(stage,percent)=>updateTransfer(id,{stage,percent}),handle);updateTransfer(id,{status:'done'});notify(`${file.name} downloaded`);}
+    catch(error){const cancelled=controller.signal.aborted||(error instanceof DOMException&&error.name==='AbortError');const message=error instanceof Error?error.message:'Download failed';updateTransfer(id,{status:cancelled?'cancelled':'error',stage:cancelled?'Cancelled':'Download failed',error:cancelled?undefined:message});if(!cancelled)notify(message,true);}
   }
   async function submitModal(event:React.FormEvent<HTMLFormElement>){
     event.preventDefault();if(!modal)return;const data=new FormData(event.currentTarget);setBusy(true);

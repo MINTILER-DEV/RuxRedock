@@ -10,12 +10,17 @@ export class HttpDrive implements Drive {
   }
   me(){return this.request<Account>('/v1/me');}
   async list(parent:string|null){
-    const query=`?limit=1000${parent?`&parent_id=${parent}`:''}`;
-    const [files,folders]=await Promise.all([this.request<{files:Entry[]}>(`/v1/files${query}`),this.request<{directories:Folder[]}>(`/v1/directories${query}`)]);
-    return {...files,...folders};
+    const files:Entry[]=[];const directories:Folder[]=[];
+    for(let offset=0;;offset+=1000){
+      const query=`?limit=1000&offset=${offset}${parent?`&parent_id=${parent}`:''}`;
+      const [page,folders]=await Promise.all([this.request<{files:Entry[]}>(`/v1/files${query}`),this.request<{directories:Folder[]}>(`/v1/directories${query}`)]);
+      files.push(...page.files);directories.push(...folders.directories);
+      if(page.files.length<1000&&folders.directories.length<1000)break;
+    }
+    return {files,directories};
   }
   folder(name:string,parent:string|null){return this.request<Folder>('/v1/directories','POST',{name,parent_id:parent});}
-  async versions(fileId:string){return (await this.request<{versions:Version[]}>(`/v1/files/${fileId}/versions?limit=1000`)).versions;}
+  async versions(fileId:string){const versions:Version[]=[];for(let offset=0;;offset+=1000){const page=(await this.request<{versions:Version[]}>(`/v1/files/${fileId}/versions?limit=1000&offset=${offset}`)).versions;versions.push(...page);if(page.length<1000)break;}return versions;}
   version(fileId:string,versionId:string){return this.request<VersionManifest>(`/v1/files/${fileId}/versions/${versionId}`);}
   ingest(input:UploadInput,signal?:AbortSignal){return this.request<Requirements>('/v1/files','POST',input,signal);}
   async put(versionId:string,objectId:string,payload:ArrayBuffer,signal?:AbortSignal){

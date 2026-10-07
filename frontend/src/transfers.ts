@@ -31,14 +31,13 @@ export async function upload(drive:Drive,file:File,parent:string|null,key:string
     progress('Uploaded',100,saved);return requirement;
   }catch(error){if(versionId)await drive.cancel(versionId).catch(()=>{});throw error;}
 }
-export async function download(drive:Drive,fileId:string,versionId:string,name:string,key:string,signal:AbortSignal,progress:Progress){
+export async function download(drive:Drive,fileId:string,versionId:string,name:string,key:string,signal:AbortSignal,progress:Progress,handle?:FileSystemFileHandle){
   const version=await drive.version(fileId,versionId);
   if(version.status!=='ready')throw new Error('This version has not finished uploading');
   const manifest=await cryptoClient.open(version.client_metadata,key);
   if(manifest.version!==1||manifest.size!==version.size||manifest.chunks.length!==version.chunks.length||manifest.chunks.some((chunk,i)=>chunk.object_id!==version.chunks[i].object_id||chunk.size!==version.chunks[i].size))throw new Error('File manifest does not match the server references');
   let writable:FileSystemWritableFileStream|undefined;
-  const picker=(window as Window&{showSaveFilePicker?:(options:unknown)=>Promise<FileSystemFileHandle>}).showSaveFilePicker;
-  if(picker&&!drive.demo){const handle=await picker({suggestedName:name});writable=await handle.createWritable();}
+  if(handle)writable=await handle.createWritable();
   if(!writable&&version.size>256*1024*1024)throw new Error('Use a browser with streaming file downloads for files larger than 256 MiB.');
   const parts:ArrayBuffer[]=[];const job=crypto.randomUUID();let done=0;
   await cryptoClient.call('download_begin',{job});

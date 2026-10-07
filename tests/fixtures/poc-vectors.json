@@ -1,0 +1,42 @@
+{
+  "crypto": [
+    {
+      "plaintext": "",
+      "fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "object_id": "d6f1556de4b3cfca75602b58fdfc6ca75f292135c24a6b3ace41f852a65304d5",
+      "payload": "UlVYQ0FTAa4YqfS46IUHJI7ajIe+Glw="
+    },
+    {
+      "plaintext": "bG9jYWwgbW9jayBwYXlsb2FkIG9iamVjdABsb2NhbCBtb2NrIHBheWxvYWQgb2JqZWN0AGxvY2FsIG1vY2sgcGF5bG9hZCBvYmplY3QA",
+      "fingerprint": "9635f919f720ece631fa9d5f4623586a425e934a233572bbaa96b224848c857b",
+      "object_id": "ba8a571634520740bbf4d7df4a6232eaa141aca70313162297de8790225cbed8",
+      "payload": "UlVYQ0FTARW6W1P+rgOv1lu0rFzTaASUnJa35mJKpTdxma0S/oFol9+3E5ZDLGLDOxHJ7vBonud3QT6a0D+f9kSV9fYfvBhOlQsxZep/Pu61HYzGWtVWeljJNDe+Zt27g5gCjkE="
+    },
+    {
+      "plaintext": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==",
+      "fingerprint": "40aff2e9d2d8922e47afd4648e6967497158785fbd1da870e7110266bf944880",
+      "object_id": "0d775c2a8feca64b667a12ced2237f534c9a30158a1a2482816543e975a685ae",
+      "payload": "UlVYQ0FTASGuZ+mV6b5kqrtceaORwafr7/W+6VeDIHE//JRB8124qX3bY9aMNceqkzfKktPh0lfT07uapNs3mtiUs/U5N4urHw8sJjlWdqQd+qRT2Q7mdvS3LykLy9J0fS9LQy/ijRuCWoIscBmE37tOJzd703BGKhAoF/RaQMS6NHztqZOHPXB/EAPZAFshemoB2/j/3Fl++wViVh8BBMp6ZRitCR9dALTUqlRCMOKosbzsrjW1j81PMXF6iv654WdXtPjV5Zgo/Z1OFMGZVnc5zxHmDdoJxSeJZMuQAuzIPfLrFnUS0ffCAyvxVcntwk/jUAtCGiivYCZfBg9jF2GavLu3YeeTpR3ViszsWCH4sXye6qKN"
+    }
+  ],
+  "chunking": {
+    "seed": 42,
+    "size": 131072,
+    "cuts": [
+      32768,
+      36478,
+      42647,
+      50938,
+      60719,
+      70876,
+      80877,
+      86132,
+      88676,
+      103796,
+      106923,
+      110968,
+      115463,
+      125776
+    ]
+  }
+}

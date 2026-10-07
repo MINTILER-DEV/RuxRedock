@@ -1,6 +1,6 @@
+use crate::error::{ApiError, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use crate::error::{ApiError, Result};
 
 pub const MAX_BLOCK_SIZE: usize = 1024 * 1024;
 pub const OBJECT_HEADER: &[u8] = b"RUXCAS\x01";
@@ -28,7 +28,9 @@ pub struct Manifest {
 impl Manifest {
     pub fn validate(&self) -> Result<()> {
         valid_name(&self.name)?;
-        if self.chunks.len() > MAX_CHUNKS { return Err(ApiError::bad("too many chunks")); }
+        if self.chunks.len() > MAX_CHUNKS {
+            return Err(ApiError::bad("too many chunks"));
+        }
         if self.client_metadata.len() > 96 * 1024 * 1024 {
             return Err(ApiError::bad("client metadata exceeds 96 MiB"));
         }
@@ -43,26 +45,43 @@ impl Manifest {
                 return Err(ApiError::bad("chunk size must be between 1 byte and 1 MiB"));
             }
             total += i64::from(chunk.size);
-            if seen.insert(&chunk.object_id, chunk.size).is_some_and(|size| size != chunk.size) {
+            if seen
+                .insert(&chunk.object_id, chunk.size)
+                .is_some_and(|size| size != chunk.size)
+            {
                 return Err(ApiError::bad("one object identifier has conflicting sizes"));
             }
         }
-        if total != self.size { return Err(ApiError::bad("chunk sizes do not match file size")); }
+        if total != self.size {
+            return Err(ApiError::bad("chunk sizes do not match file size"));
+        }
         Ok(())
     }
 }
 
 pub fn valid_hash(value: &str) -> Result<()> {
-    if value.len() != 64 || !value.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)) {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+    {
         return Err(ApiError::bad("expected a lowercase SHA-256 identifier"));
     }
     Ok(())
 }
 
 pub fn valid_name(name: &str) -> Result<()> {
-    if name.is_empty() || name.chars().count() > 255 || name == "." || name == ".."
-        || name.chars().any(|c| c.is_control() || c == '/' || c == '\\') {
-        return Err(ApiError::bad("name must contain 1–255 characters without separators or control characters"));
+    if name.is_empty()
+        || name.chars().count() > 255
+        || name == "."
+        || name == ".."
+        || name
+            .chars()
+            .any(|c| c.is_control() || c == '/' || c == '\\')
+    {
+        return Err(ApiError::bad(
+            "name must contain 1–255 characters without separators or control characters",
+        ));
     }
     Ok(())
 }
@@ -72,6 +91,12 @@ pub fn valid_name(name: &str) -> Result<()> {
 pub struct DirectoryInput {
     pub name: String,
     pub parent_id: Option<Uuid>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RenameInput {
+    pub name: String,
 }
 
 #[derive(Default, Deserialize)]
@@ -103,13 +128,26 @@ mod tests {
     use super::*;
     #[test]
     fn rejects_invalid_and_conflicting_manifests() {
-        let mut manifest = Manifest { name: "test".into(), parent_id: None, size: 1,
-            client_metadata: "".into(), chunks: vec![ChunkSpec {object_id: "a".repeat(64), size: 1}] };
+        let mut manifest = Manifest {
+            name: "test".into(),
+            parent_id: None,
+            size: 1,
+            client_metadata: "".into(),
+            chunks: vec![ChunkSpec {
+                object_id: "a".repeat(64),
+                size: 1,
+            }],
+        };
         assert!(manifest.validate().is_ok());
-        manifest.chunks.push(ChunkSpec {object_id: "a".repeat(64), size: 2});
+        manifest.chunks.push(ChunkSpec {
+            object_id: "a".repeat(64),
+            size: 2,
+        });
         manifest.size = 3;
         assert!(manifest.validate().is_err());
-        for name in ["", ".", "..", "../test", "a\\b", "a\0b"] { assert!(valid_name(name).is_err()); }
+        for name in ["", ".", "..", "../test", "a\\b", "a\0b"] {
+            assert!(valid_name(name).is_err());
+        }
         assert!(valid_hash(&"A".repeat(64)).is_err());
     }
 }

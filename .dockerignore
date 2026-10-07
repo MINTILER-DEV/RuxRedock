@@ -1,0 +1,12 @@
+.git
+.data
+.env
+target
+frontend/node_modules
+frontend/dist
+frontend/public/wasm
+frontend/src/wasm
+frontend/test-results
+frontend/playwright-report
+**/__pycache__
+poc/.venv

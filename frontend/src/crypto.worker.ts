@@ -1,9 +1,9 @@
 /// <reference lib="webworker" />
 import type {PrivateChunk,PrivateManifest} from './types';
+import init,* as module from './wasm/ruxredock_wasm.js';
 type Hasher={update:(data:Uint8Array)=>void;finish:()=>string;free:()=>void};
 type Wasm={default:()=>Promise<unknown>;hash:(data:Uint8Array)=>string;encrypt:(data:Uint8Array)=>Uint8Array;decrypt:(data:Uint8Array,fingerprint:string,objectId:string)=>Uint8Array;Chunker:new(min:number,avg:number,max:number,window:number)=>{feed:(data:Uint8Array)=>Uint32Array;free:()=>void};FileHasher:new()=>Hasher};
-const modulePath='/wasm/ruxredock_wasm.js';
-const ready=import(/* @vite-ignore */modulePath).then(async(module)=>{const wasm=module as Wasm;await wasm.default();return wasm;});
+const ready=init().then(()=>module as Wasm);
 const cancelled=new Set<number>();
 const downloadHashes=new Map<string,Hasher>();
 const aad=new TextEncoder().encode('ruxredock-private-manifest-v1');
